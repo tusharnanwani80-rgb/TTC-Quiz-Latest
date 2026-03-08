@@ -4,107 +4,145 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>TTC Tenses Quiz</title>
+<title>TTC Quiz - Tenses</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <style>
 
 body{
-font-family:Poppins, sans-serif;
-background:#f7f4ea;
+font-family:'Poppins',sans-serif;
+background:#f5f1e8;
 margin:0;
 display:flex;
 justify-content:center;
 align-items:center;
-height:100vh;
+min-height:100vh;
 }
 
 .container{
-width:95%;
-max-width:600px;
+width:90%;
+max-width:700px;
 text-align:center;
+}
+
+.logo{
+width:90px;
+display:block;
+margin:auto;
+margin-bottom:10px;
 }
 
 .card{
 background:white;
-padding:30px;
 border-radius:20px;
-box-shadow:0 10px 25px rgba(0,0,0,0.15);
-}
-
-.logo{
-width:70px;
-border-radius:50%;
-position:absolute;
-right:20px;
-top:20px;
-}
-
-.header{
-position:absolute;
-left:20px;
-top:25px;
-font-weight:600;
+padding:30px;
+box-shadow:0 12px 25px rgba(0,0,0,0.12);
+transition:0.3s;
 }
 
 button{
-padding:12px 18px;
+padding:12px 22px;
 border:none;
 border-radius:12px;
 font-size:16px;
 cursor:pointer;
-box-shadow:0 4px 10px rgba(0,0,0,0.2);
-transition:0.2s;
+box-shadow:0 8px 16px rgba(0,0,0,0.1);
+transition:0.25s;
 }
 
 button:hover{
-transform:translateY(-2px);
+transform:translateY(-3px);
 }
 
-.start-btn{
-background:#5cc6b3;
-color:white;
-margin-top:20px;
+.startBtn{
+background:#77e0c4;
 }
 
 .option{
 display:block;
-width:100%;
 margin:10px 0;
-background:#f2f2f2;
+background:#eee;
+width:100%;
 }
 
 .correct{
-background:#90ee90;
+background:#7be495 !important;
 }
 
 .wrong{
-background:#ffb6b6;
+background:#ff7b7b !important;
 }
 
-.next-btn{
-background:#ff7f7f;
-color:white;
-margin-top:15px;
-}
-
-input{
-padding:12px;
+.progress{
+width:100%;
+height:14px;
+background:#eee;
 border-radius:10px;
-border:1px solid #ccc;
-width:80%;
+margin:15px 0;
+overflow:hidden;
 }
 
-.hidden{
+.bar{
+height:100%;
+width:0%;
+background:linear-gradient(90deg,#77e0c4,#b59cff);
+transition:0.4s;
+}
+
+.nextBtn{
+background:#ff8a8a;
+margin-top:15px;
 display:none;
 }
 
-.result{
+.explanation{
+margin-top:15px;
+color:#444;
+font-size:14px;
+}
+
+.floating{
+position:fixed;
+right:15px;
+bottom:20px;
+display:flex;
+flex-direction:column;
+gap:12px;
+}
+
+.floating a{
+width:50px;
+height:50px;
+border-radius:50%;
+display:flex;
+justify-content:center;
+align-items:center;
+color:white;
+text-decoration:none;
 font-size:22px;
-font-weight:600;
+box-shadow:0 6px 15px rgba(0,0,0,0.2);
+}
+
+.whatsapp{background:#25D366;}
+.map{background:#ff6b6b;}
+
+.result{
+display:none;
+}
+
+.footer{
+margin-top:20px;
+font-size:12px;
+color:#777;
+}
+
+input{
+padding:10px;
+border-radius:10px;
+border:1px solid #ddd;
+width:80%;
+margin-top:10px;
 }
 
 </style>
@@ -112,255 +150,262 @@ font-weight:600;
 
 <body>
 
-<img class="logo" src="https://i.ibb.co/dsBdtCwK/Ttc-logo.png">
-<div class="header">TTC Quiz</div>
-
 <div class="container">
 
-<div id="nameModal" class="card">
+<div id="entry" class="card">
+
+<img src="https://i.ibb.co/dsBdtCwK/Ttc-logo.png" class="logo">
+
 <h2>Enter Your Name</h2>
-<input id="nameInput" placeholder="Your Name">
-<br>
-<button class="start-btn" onclick="start()">Continue</button>
+
+<input id="nameInput" placeholder="Your name">
+
+<br><br>
+
+<button class="startBtn" onclick="saveName()">Continue</button>
+
 </div>
 
 
-<div id="welcome" class="card hidden">
-<img src="https://i.ibb.co/dsBdtCwK/Ttc-logo.png" width="90">
+<div id="welcome" class="card" style="display:none">
+
+<img src="https://i.ibb.co/dsBdtCwK/Ttc-logo.png" class="logo">
+
 <h2 id="welcomeText"></h2>
-<button class="start-btn" onclick="startQuiz()">Start Quiz</button>
+
+<button class="startBtn" onclick="startQuiz()">Start Quiz</button>
+
 </div>
 
 
-<div id="quiz" class="card hidden">
+<div id="quiz" class="card" style="display:none">
+
+<img src="https://i.ibb.co/dsBdtCwK/Ttc-logo.png" class="logo">
+
+<div class="progress">
+<div class="bar" id="bar"></div>
+</div>
 
 <h3 id="question"></h3>
 
 <div id="options"></div>
 
-<button id="nextBtn" class="next-btn hidden" onclick="nextQuestion()">Next Question</button>
+<div class="explanation" id="explanation"></div>
+
+<button class="nextBtn" id="nextBtn" onclick="nextQuestion()">Next Question</button>
 
 </div>
 
 
-<div id="result" class="card hidden">
+<div id="result" class="card result">
 
-<img src="https://i.ibb.co/dsBdtCwK/Ttc-logo.png" width="90">
+<img src="https://i.ibb.co/dsBdtCwK/Ttc-logo.png" class="logo">
 
-<h2>Quiz Completed</h2>
+<h2>Quiz Result</h2>
 
-<div class="result" id="score"></div>
+<h3 id="score"></h3>
 
 <p id="message"></p>
 
-<button class="start-btn" onclick="restart()">Restart Quiz</button>
+<button onclick="restartQuiz()">Restart Quiz</button>
 
+<div class="footer">
+Powered by TTC: Tushar Tuition Classes, Wardha
 </div>
 
 </div>
+
+</div>
+
+
+<div class="floating">
+
+<a class="whatsapp" href="https://wa.me/917517445450">W</a>
+
+<a class="map" href="https://maps.app.goo.gl/gp7xCdhtr53HhHoc6">M</a>
+
+</div>
+
 
 <script>
 
-let quizData = [
+let name = localStorage.getItem("ttcName")
+
+if(name){
+document.getElementById("entry").style.display="none"
+showWelcome(name)
+}
+
+function saveName(){
+
+name=document.getElementById("nameInput").value
+
+localStorage.setItem("ttcName",name)
+
+showWelcome(name)
+
+}
+
+function showWelcome(n){
+
+document.getElementById("welcome").style.display="block"
+
+document.getElementById("welcomeText").innerText="Welcome, TTC Champ "+n
+
+}
+
+const questions=[
 
 {
-question:"She ____ to school every day.",
+question:"She ___ to school every day.",
 options:["go","goes","going","gone"],
-correctIndex:1,
-explanation:"Present simple tense for third person singular."
+correct:1,
+explanation:"Simple Present tense uses 'goes' for third person singular."
 },
 
 {
-question:"They ____ football when it started raining.",
-options:["play","were playing","played","playing"],
-correctIndex:1,
-explanation:"Past continuous describes an ongoing past action."
+question:"I ___ my homework yesterday.",
+options:["did","do","done","doing"],
+correct:0,
+explanation:"Past tense of do is 'did'."
 },
 
 {
-question:"I ____ my homework already.",
-options:["finish","finished","have finished","finishing"],
-correctIndex:2,
-explanation:"Present perfect for completed action."
+question:"They ___ playing football now.",
+options:["is","are","was","be"],
+correct:1,
+explanation:"Present continuous uses 'are' with plural subjects."
 },
 
 {
-question:"We ____ to Mumbai next week.",
-options:["go","going","will go","went"],
-correctIndex:2,
-explanation:"Future tense using 'will'."
+question:"He ___ finished the work.",
+options:["have","has","had","having"],
+correct:1,
+explanation:"Present perfect uses 'has' with he/she/it."
 },
 
 {
-question:"He ____ TV when I called him.",
-options:["watch","was watching","watched","watching"],
-correctIndex:1,
-explanation:"Past continuous used for interrupted action."
+question:"We ___ watching a movie tomorrow.",
+options:["will","will be","were","be"],
+correct:1,
+explanation:"Future continuous uses 'will be'."
 }
 
-];
+]
 
-let current=0;
-let score=0;
-let userName="";
-
-function shuffle(arr){
-return arr.sort(()=>Math.random()-0.5);
-}
-
-function start(){
-
-userName=document.getElementById("nameInput").value;
-
-if(!userName)return;
-
-localStorage.setItem("ttc_name",userName);
-
-document.getElementById("nameModal").classList.add("hidden");
-
-document.getElementById("welcome").classList.remove("hidden");
-
-document.getElementById("welcomeText").innerText=`Welcome, TTC Champ ${userName}`;
-
-}
+let current=0
+let score=0
 
 function startQuiz(){
 
-quizData=shuffle(quizData);
+document.getElementById("welcome").style.display="none"
 
-current=0;
-score=0;
+document.getElementById("quiz").style.display="block"
 
-document.getElementById("welcome").classList.add("hidden");
-document.getElementById("quiz").classList.remove("hidden");
-
-showQuestion();
+loadQuestion()
 
 }
 
-function showQuestion(){
+function loadQuestion(){
 
-let q=quizData[current];
+let q=questions[current]
 
-document.getElementById("question").innerText=q.question;
+document.getElementById("question").innerText=q.question
 
-let optionsDiv=document.getElementById("options");
+let optionsHTML=""
 
-optionsDiv.innerHTML="";
+q.options.forEach((opt,i)=>{
 
-let opts=q.options.map((opt,i)=>({text:opt,index:i}));
+optionsHTML+=`<button class="option" onclick="selectOption(${i},this)">${opt}</button>`
 
-opts=shuffle(opts);
+})
 
-opts.forEach(o=>{
+document.getElementById("options").innerHTML=optionsHTML
 
-let btn=document.createElement("button");
+document.getElementById("explanation").innerHTML=""
 
-btn.innerText=o.text;
+document.getElementById("nextBtn").style.display="none"
 
-btn.className="option";
-
-btn.onclick=()=>selectAnswer(btn,o.index);
-
-optionsDiv.appendChild(btn);
-
-});
-
-document.getElementById("nextBtn").classList.add("hidden");
+document.getElementById("bar").style.width=(current/questions.length)*100+"%"
 
 }
 
-function selectAnswer(btn,index){
+function selectOption(i,btn){
 
-let q=quizData[current];
+let q=questions[current]
 
-let buttons=document.querySelectorAll(".option");
+let buttons=document.querySelectorAll(".option")
 
-buttons.forEach(b=>b.disabled=true);
+buttons.forEach(b=>b.disabled=true)
 
-if(index===q.correctIndex){
+if(i===q.correct){
 
-btn.classList.add("correct");
+btn.classList.add("correct")
 
-score++;
+score++
 
-confetti({particleCount:60,spread:70,origin:{y:0.6}});
+}else{
 
-}
+btn.classList.add("wrong")
 
-else{
-
-btn.classList.add("wrong");
-
-buttons[q.correctIndex].classList.add("correct");
-
-alert(q.explanation);
+buttons[q.correct].classList.add("correct")
 
 }
 
-document.getElementById("nextBtn").classList.remove("hidden");
+document.getElementById("explanation").innerText=q.explanation
+
+document.getElementById("nextBtn").style.display="inline-block"
 
 }
 
 function nextQuestion(){
 
-current++;
+current++
 
-if(current<quizData.length){
+if(current<questions.length){
 
-showQuestion();
+loadQuestion()
 
-}
+}else{
 
-else{
-
-finishQuiz();
+showResult()
 
 }
 
 }
 
-function finishQuiz(){
+function showResult(){
 
-document.getElementById("quiz").classList.add("hidden");
+document.getElementById("quiz").style.display="none"
 
-document.getElementById("result").classList.remove("hidden");
+document.getElementById("result").style.display="block"
 
-document.getElementById("score").innerText=`${score} / ${quizData.length}`;
+document.getElementById("score").innerText=score+" / "+questions.length
 
-let percent=(score/quizData.length)*100;
+let percent=(score/questions.length)*100
 
 if(percent>=75){
 
-document.getElementById("message").innerText=`Well Done, ${userName}! You’re a true TTC Champ!`;
+document.getElementById("message").innerText="Well Done, "+name+"! You’re a true TTC Champ!"
 
-confetti({particleCount:200,spread:120});
+}else{
 
-}
-
-else{
-
-document.getElementById("message").innerText=`Good try ${userName}! Practice more and become a TTC Champ.`;
+document.getElementById("message").innerText="Good attempt! Keep practicing."
 
 }
 
 }
 
-function restart(){
+function restartQuiz(){
 
-location.reload();
+current=0
+score=0
 
-}
+document.getElementById("result").style.display="none"
 
-window.onload=function(){
+document.getElementById("quiz").style.display="block"
 
-let saved=localStorage.getItem("ttc_name");
-
-if(saved){
-
-document.getElementById("nameInput").value=saved;
-
-}
+loadQuestion()
 
 }
 
