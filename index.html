@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 
 <meta charset="UTF-8">
@@ -9,6 +8,8 @@
 <title>TTC Quiz - Tenses</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <style>
 
@@ -40,7 +41,6 @@ background:white;
 border-radius:20px;
 padding:30px;
 box-shadow:0 12px 25px rgba(0,0,0,0.12);
-transition:0.3s;
 }
 
 button{
@@ -149,7 +149,6 @@ height:30px;
 }
 
 </style>
-
 </head>
 
 
@@ -157,9 +156,7 @@ height:30px;
 
 <div class="container">
 
-
 <!-- ENTRY SCREEN -->
-
 <div id="entry" class="card">
 
 <img src="https://i.ibb.co/dsBdtCwK/Ttc-logo.png" class="logo">
@@ -176,7 +173,6 @@ height:30px;
 
 
 <!-- WELCOME SCREEN -->
-
 <div id="welcome" class="card" style="display:none">
 
 <img src="https://i.ibb.co/dsBdtCwK/Ttc-logo.png" class="logo">
@@ -189,7 +185,6 @@ height:30px;
 
 
 <!-- QUIZ SCREEN -->
-
 <div id="quiz" class="card" style="display:none">
 
 <img src="https://i.ibb.co/dsBdtCwK/Ttc-logo.png" class="logo">
@@ -210,7 +205,6 @@ height:30px;
 
 
 <!-- RESULT SCREEN -->
-
 <div id="result" class="card result">
 
 <img src="https://i.ibb.co/dsBdtCwK/Ttc-logo.png" class="logo">
@@ -222,7 +216,6 @@ height:30px;
 <p id="message"></p>
 
 <button onclick="restartQuiz()">Restart Quiz</button>
-
 
 <div style="margin-top:18px">
 
@@ -236,7 +229,6 @@ height:30px;
 
 </div>
 
-
 <div class="footer">
 Powered by TTC: Tushar Tuition Classes, Wardha
 </div>
@@ -246,8 +238,7 @@ Powered by TTC: Tushar Tuition Classes, Wardha
 </div>
 
 
-<!-- FLOATING ICONS -->
-
+<!-- FLOATING BUTTONS -->
 <div class="floating">
 
 <a href="https://wa.me/917517445450" target="_blank">
@@ -287,10 +278,20 @@ showWelcome(name)
 function showWelcome(n){
 
 document.getElementById("entry").style.display="none"
-
 document.getElementById("welcome").style.display="block"
 
 document.getElementById("welcomeText").innerText="Welcome, TTC Champ "+n
+
+}
+
+
+function fireConfetti(){
+
+confetti({
+particleCount:80,
+spread:70,
+origin:{ y:0.6 }
+})
 
 }
 
@@ -334,6 +335,12 @@ explanation:"Future continuous uses 'will be'."
 
 ]
 
+
+questions.sort(()=>Math.random()-0.5)
+
+questions.forEach(q=>q.options.sort(()=>Math.random()-0.5))
+
+
 let current=0
 let score=0
 
@@ -341,7 +348,6 @@ let score=0
 function startQuiz(){
 
 document.getElementById("welcome").style.display="none"
-
 document.getElementById("quiz").style.display="block"
 
 loadQuestion()
@@ -382,11 +388,13 @@ let buttons=document.querySelectorAll(".option")
 
 buttons.forEach(b=>b.disabled=true)
 
-if(i===q.correct){
+if(q.options[i]===questions[current].options[questions[current].correct]){
 
 btn.classList.add("correct")
 
 score++
+
+fireConfetti()
 
 }else{
 
@@ -423,7 +431,6 @@ showResult()
 function showResult(){
 
 document.getElementById("quiz").style.display="none"
-
 document.getElementById("result").style.display="block"
 
 document.getElementById("score").innerText=score+" / "+questions.length
@@ -433,6 +440,10 @@ let percent=(score/questions.length)*100
 if(percent>=75){
 
 document.getElementById("message").innerText="Well Done, "+name+"! You’re a true TTC Champ!"
+
+fireConfetti()
+setTimeout(fireConfetti,400)
+setTimeout(fireConfetti,800)
 
 }else{
 
@@ -449,7 +460,6 @@ current=0
 score=0
 
 document.getElementById("result").style.display="none"
-
 document.getElementById("quiz").style.display="block"
 
 loadQuestion()
@@ -459,5 +469,4 @@ loadQuestion()
 </script>
 
 </body>
-
 </html>
