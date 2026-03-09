@@ -1,93 +1,198 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
+<title>TTC Quiz - Tenses</title>
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Particle Button</title>
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-<script src="https://cdn.tailwindcss.com"></script>
+<style>
 
+body{
+font-family: Arial;
+background:#f4f6fb;
+text-align:center;
+padding:20px;
+}
+
+.logo{
+width:120px;
+margin-bottom:10px;
+}
+
+.quiz-box{
+background:white;
+padding:25px;
+border-radius:12px;
+box-shadow:0 5px 20px rgba(0,0,0,0.1);
+max-width:500px;
+margin:auto;
+}
+
+button{
+display:block;
+width:100%;
+margin:10px 0;
+padding:12px;
+border:none;
+border-radius:8px;
+background:#4CAF50;
+color:white;
+font-size:16px;
+cursor:pointer;
+}
+
+button:hover{
+background:#45a049;
+}
+
+.progress{
+height:12px;
+background:#ddd;
+border-radius:10px;
+margin-bottom:20px;
+}
+
+.progress-bar{
+height:100%;
+background:#4CAF50;
+border-radius:10px;
+}
+
+.result{
+font-size:22px;
+font-weight:bold;
+}
+
+.icons{
+margin-top:20px;
+}
+
+.icons a{
+margin:10px;
+font-size:20px;
+text-decoration:none;
+}
+
+</style>
 </head>
 
-<body class="bg-gray-100 flex items-center justify-center h-screen">
+<body>
 
-<button id="particleBtn"
-class="relative flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg shadow hover:bg-blue-700 transition">
+<img src="https://i.ibb.co/dsBdtCwK/Ttc-logo.png" class="logo">
 
-Click Me
+<div id="root"></div>
 
-<svg xmlns="http://www.w3.org/2000/svg"
-class="w-4 h-4"
-fill="none"
-viewBox="0 0 24 24"
-stroke="currentColor">
+<script type="text/babel">
 
-<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-d="M5 3l14 9-14 9V3z" />
-
-</svg>
-
-</button>
-
-<div id="particles"></div>
-
-<script>
-
-const button = document.getElementById("particleBtn")
-const container = document.getElementById("particles")
-
-button.addEventListener("click", () => {
-
-const rect = button.getBoundingClientRect()
-
-const centerX = rect.left + rect.width/2
-const centerY = rect.top + rect.height/2
-
-for(let i=0;i<8;i++){
-
-const particle = document.createElement("div")
-
-particle.className =
-"fixed w-2 h-2 bg-black rounded-full pointer-events-none"
-
-particle.style.left = centerX + "px"
-particle.style.top = centerY + "px"
-
-container.appendChild(particle)
-
-const angle = Math.random()*2*Math.PI
-const distance = Math.random()*80 + 40
-
-const x = Math.cos(angle)*distance
-const y = Math.sin(angle)*distance
-
-particle.animate(
-
-[
-{ transform:"translate(0,0) scale(1)", opacity:1 },
-{ transform:`translate(${x}px,${y}px) scale(0)`, opacity:0 }
-
-],
+const questions = [
 
 {
-duration:600,
-easing:"ease-out"
+question:"She ____ to school every day.",
+options:["go","goes","going","gone"],
+answer:"goes"
+},
+
+{
+question:"They ____ playing cricket now.",
+options:["is","are","was","be"],
+answer:"are"
+},
+
+{
+question:"I ____ my homework yesterday.",
+options:["do","did","done","doing"],
+answer:"did"
+},
+
+{
+question:"We ____ watching a movie tonight.",
+options:["is","am","are","was"],
+answer:"are"
+},
+
+{
+question:"He ____ eaten his lunch.",
+options:["has","have","had","having"],
+answer:"has"
 }
+
+]
+
+function Quiz(){
+
+const [current,setCurrent]=React.useState(0)
+const [score,setScore]=React.useState(0)
+const [showResult,setShowResult]=React.useState(false)
+
+function checkAnswer(option){
+
+if(option===questions[current].answer){
+setScore(score+1)
+}
+
+const next=current+1
+
+if(next<questions.length){
+setCurrent(next)
+}else{
+setShowResult(true)
+}
+
+}
+
+const progress=((current)/questions.length)*100
+
+return(
+
+<div className="quiz-box">
+
+<div className="progress">
+<div className="progress-bar" style={{width:progress+"%"}}></div>
+</div>
+
+{showResult ? (
+
+<div className="result">
+Your Score: {score} / {questions.length}
+
+<div className="icons">
+
+<a href="https://wa.me/" target="_blank">WhatsApp</a>
+
+<a href="https://maps.google.com" target="_blank">Maps</a>
+
+</div>
+
+</div>
+
+):(
+
+<div>
+
+<h2>{questions[current].question}</h2>
+
+{questions[current].options.map((opt,i)=>(
+
+<button key={i} onClick={()=>checkAnswer(opt)}>{opt}</button>
+
+))}
+
+</div>
+
+)}
+
+</div>
 
 )
 
-setTimeout(()=>{
-
-particle.remove()
-
-},600)
-
 }
 
-})
+ReactDOM.createRoot(document.getElementById("root")).render(<Quiz/>)
 
 </script>
 
