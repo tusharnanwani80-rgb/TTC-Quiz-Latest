@@ -2,80 +2,63 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>TTC Quiz - Tenses</title>
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<title>TTC Carousel</title>
 
 <style>
 
 body{
-font-family: Arial;
-background:#f4f6fb;
-text-align:center;
-padding:20px;
+font-family: Arial, sans-serif;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+background:#f5f5f5;
 }
 
-.logo{
-width:120px;
-margin-bottom:10px;
+.carousel{
+width:200px;
+overflow:hidden;
+position:relative;
 }
 
-.quiz-box{
+.carousel-track{
+display:flex;
+transition: transform 0.4s ease;
+}
+
+.card{
+min-width:200px;
+height:200px;
 background:white;
-padding:25px;
-border-radius:12px;
-box-shadow:0 5px 20px rgba(0,0,0,0.1);
-max-width:500px;
-margin:auto;
-}
-
-button{
-display:block;
-width:100%;
-margin:10px 0;
-padding:12px;
-border:none;
-border-radius:8px;
-background:#4CAF50;
-color:white;
-font-size:16px;
-cursor:pointer;
-}
-
-button:hover{
-background:#45a049;
-}
-
-.progress{
-height:12px;
-background:#ddd;
 border-radius:10px;
-margin-bottom:20px;
-}
-
-.progress-bar{
-height:100%;
-background:#4CAF50;
-border-radius:10px;
-}
-
-.result{
-font-size:22px;
+display:flex;
+align-items:center;
+justify-content:center;
+box-shadow:0 4px 12px rgba(0,0,0,0.1);
+font-size:40px;
 font-weight:bold;
 }
 
-.icons{
-margin-top:20px;
+button{
+position:absolute;
+top:50%;
+transform:translateY(-50%);
+background:#ffffff;
+border:none;
+font-size:20px;
+padding:10px;
+cursor:pointer;
+box-shadow:0 2px 8px rgba(0,0,0,0.2);
+border-radius:50%;
 }
 
-.icons a{
-margin:10px;
-font-size:20px;
-text-decoration:none;
+.prev{
+left:-40px;
+}
+
+.next{
+right:-40px;
 }
 
 </style>
@@ -83,116 +66,46 @@ text-decoration:none;
 
 <body>
 
-<img src="https://i.ibb.co/dsBdtCwK/Ttc-logo.png" class="logo">
+<div class="carousel">
 
-<div id="root"></div>
+<button class="prev">&#10094;</button>
 
-<script type="text/babel">
+<div class="carousel-track">
 
-const questions = [
-
-{
-question:"She ____ to school every day.",
-options:["go","goes","going","gone"],
-answer:"goes"
-},
-
-{
-question:"They ____ playing cricket now.",
-options:["is","are","was","be"],
-answer:"are"
-},
-
-{
-question:"I ____ my homework yesterday.",
-options:["do","did","done","doing"],
-answer:"did"
-},
-
-{
-question:"We ____ watching a movie tonight.",
-options:["is","am","are","was"],
-answer:"are"
-},
-
-{
-question:"He ____ eaten his lunch.",
-options:["has","have","had","having"],
-answer:"has"
-}
-
-]
-
-function Quiz(){
-
-const [current,setCurrent]=React.useState(0)
-const [score,setScore]=React.useState(0)
-const [showResult,setShowResult]=React.useState(false)
-
-function checkAnswer(option){
-
-if(option===questions[current].answer){
-setScore(score+1)
-}
-
-const next=current+1
-
-if(next<questions.length){
-setCurrent(next)
-}else{
-setShowResult(true)
-}
-
-}
-
-const progress=((current)/questions.length)*100
-
-return(
-
-<div className="quiz-box">
-
-<div className="progress">
-<div className="progress-bar" style={{width:progress+"%"}}></div>
-</div>
-
-{showResult ? (
-
-<div className="result">
-Your Score: {score} / {questions.length}
-
-<div className="icons">
-
-<a href="https://wa.me/" target="_blank">WhatsApp</a>
-
-<a href="https://maps.google.com" target="_blank">Maps</a>
+<div class="card">1</div>
+<div class="card">2</div>
+<div class="card">3</div>
+<div class="card">4</div>
+<div class="card">5</div>
 
 </div>
 
-</div>
-
-):(
-
-<div>
-
-<h2>{questions[current].question}</h2>
-
-{questions[current].options.map((opt,i)=>(
-
-<button key={i} onClick={()=>checkAnswer(opt)}>{opt}</button>
-
-))}
+<button class="next">&#10095;</button>
 
 </div>
 
-)}
+<script>
 
-</div>
+const track = document.querySelector('.carousel-track')
+const next = document.querySelector('.next')
+const prev = document.querySelector('.prev')
 
-)
+let index = 0
+const total = 5
 
+next.addEventListener('click', () => {
+index = (index + 1) % total
+updateCarousel()
+})
+
+prev.addEventListener('click', () => {
+index = (index - 1 + total) % total
+updateCarousel()
+})
+
+function updateCarousel(){
+track.style.transform = `translateX(-${index * 200}px)`
 }
-
-ReactDOM.createRoot(document.getElementById("root")).render(<Quiz/>)
 
 </script>
 
