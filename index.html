@@ -6,193 +6,90 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>TTC Testimonials</title>
+<title>Particle Button</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 
-<!-- Elfsight Google Reviews Script -->
-<script src="https://elfsightcdn.com/platform.js" async></script>
-
 </head>
 
-<body class="bg-gray-100">
+<body class="bg-gray-100 flex items-center justify-center h-screen">
 
+<button id="particleBtn"
+class="relative flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg shadow hover:bg-blue-700 transition">
 
-<!-- LOGO -->
-<div class="text-center pt-16">
-<img src="https://i.ibb.co/dsBdtCwK/Ttc-logo.png" class="w-20 mx-auto mb-4">
-</div>
+Click Me
 
+<svg xmlns="http://www.w3.org/2000/svg"
+class="w-4 h-4"
+fill="none"
+viewBox="0 0 24 24"
+stroke="currentColor">
 
-<!-- CAROUSEL TESTIMONIALS -->
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+d="M5 3l14 9-14 9V3z" />
 
-<section class="max-w-3xl mx-auto py-12 text-center">
-
-<h2 class="text-4xl font-bold mb-10">
-Student Testimonials
-</h2>
-
-<div class="relative overflow-hidden">
-
-<div id="carousel" class="flex transition-transform duration-500">
-
-<!-- CARD 1 -->
-<div class="min-w-full flex justify-center">
-<div class="bg-white shadow-xl rounded-xl p-8 w-80">
-
-<img src="https://randomuser.me/api/portraits/men/1.jpg"
-class="w-16 h-16 rounded-full mx-auto mb-4">
-
-<h3 class="font-semibold text-lg">
-John Doe
-</h3>
-
-<p class="text-gray-600 text-sm mt-2">
-Amazing experience working with TTC! The teaching method is clear and very effective.
-</p>
-
-</div>
-</div>
-
-
-<!-- CARD 2 -->
-<div class="min-w-full flex justify-center">
-<div class="bg-white shadow-xl rounded-xl p-8 w-80">
-
-<img src="https://randomuser.me/api/portraits/women/1.jpg"
-class="w-16 h-16 rounded-full mx-auto mb-4">
-
-<h3 class="font-semibold text-lg">
-Jane Smith
-</h3>
-
-<p class="text-gray-600 text-sm mt-2">
-The teachers are extremely supportive and concepts are explained very clearly.
-</p>
-
-</div>
-</div>
-
-
-<!-- CARD 3 -->
-<div class="min-w-full flex justify-center">
-<div class="bg-white shadow-xl rounded-xl p-8 w-80">
-
-<img src="https://randomuser.me/api/portraits/men/2.jpg"
-class="w-16 h-16 rounded-full mx-auto mb-4">
-
-<h3 class="font-semibold text-lg">
-Mike Johnson
-</h3>
-
-<p class="text-gray-600 text-sm mt-2">
-Highly recommended tuition classes. My child's performance improved a lot.
-</p>
-
-</div>
-</div>
-
-</div>
-
-
-<!-- ARROWS -->
-
-<button onclick="prevSlide()" 
-class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white shadow p-3 rounded-full">
-
-←
+</svg>
 
 </button>
 
-<button onclick="nextSlide()" 
-class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white shadow p-3 rounded-full">
-
-→
-
-</button>
-
-</div>
-
-
-<!-- DOTS -->
-
-<div class="flex justify-center mt-6 gap-2">
-
-<div class="dot w-3 h-3 rounded-full bg-blue-500"></div>
-<div class="dot w-3 h-3 rounded-full bg-gray-300"></div>
-<div class="dot w-3 h-3 rounded-full bg-gray-300"></div>
-
-</div>
-
-</section>
-
-
-
-<!-- GOOGLE REVIEWS SECTION -->
-
-<section class="py-20 bg-white">
-
-<div class="max-w-6xl mx-auto text-center px-6">
-
-<h2 class="text-4xl font-bold mb-4">
-Real Google Reviews
-</h2>
-
-<p class="text-gray-600 mb-10">
-See what students and parents say about TTC Tuition Classes
-</p>
-
-<!-- Elfsight Widget -->
-<div class="elfsight-app-e87fdd6e-f4b8-4807-89b4-ecc80ca4f3c0" data-elfsight-app-lazy></div>
-
-</div>
-
-</section>
-
-
+<div id="particles"></div>
 
 <script>
 
-let index = 0
+const button = document.getElementById("particleBtn")
+const container = document.getElementById("particles")
 
-const carousel = document.getElementById("carousel")
-const dots = document.querySelectorAll(".dot")
+button.addEventListener("click", () => {
 
-function updateCarousel() {
+const rect = button.getBoundingClientRect()
 
-carousel.style.transform = `translateX(-${index * 100}%)`
+const centerX = rect.left + rect.width/2
+const centerY = rect.top + rect.height/2
 
-dots.forEach((dot,i)=>{
-dot.classList.remove("bg-blue-500")
-dot.classList.add("bg-gray-300")
+for(let i=0;i<8;i++){
 
-if(i===index){
-dot.classList.add("bg-blue-500")
+const particle = document.createElement("div")
+
+particle.className =
+"fixed w-2 h-2 bg-black rounded-full pointer-events-none"
+
+particle.style.left = centerX + "px"
+particle.style.top = centerY + "px"
+
+container.appendChild(particle)
+
+const angle = Math.random()*2*Math.PI
+const distance = Math.random()*80 + 40
+
+const x = Math.cos(angle)*distance
+const y = Math.sin(angle)*distance
+
+particle.animate(
+
+[
+{ transform:"translate(0,0) scale(1)", opacity:1 },
+{ transform:`translate(${x}px,${y}px) scale(0)`, opacity:0 }
+
+],
+
+{
+duration:600,
+easing:"ease-out"
 }
+
+)
+
+setTimeout(()=>{
+
+particle.remove()
+
+},600)
+
+}
+
 })
 
-}
-
-function nextSlide(){
-
-index++
-if(index>2) index=0
-
-updateCarousel()
-
-}
-
-function prevSlide(){
-
-index--
-if(index<0) index=2
-
-updateCarousel()
-
-}
-
 </script>
-
 
 </body>
 </html>
