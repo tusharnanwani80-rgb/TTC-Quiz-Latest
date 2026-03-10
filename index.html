@@ -11,17 +11,17 @@
 
 body{
 margin:0;
-font-family: "Segoe UI", sans-serif;
-background:#f6f4f8;
+font-family:"Segoe UI",sans-serif;
+background:#f7f6fa;
 display:flex;
 justify-content:center;
 align-items:center;
-height:100vh;
+min-height:100vh;
 color:#333;
 }
 
 .app{
-width:380px;
+width:400px;
 max-width:95%;
 }
 
@@ -29,13 +29,17 @@ max-width:95%;
 background:white;
 padding:25px;
 border-radius:20px;
-box-shadow:0 15px 40px rgba(0,0,0,0.15);
+box-shadow:0 15px 35px rgba(0,0,0,0.15);
 text-align:center;
 }
 
 .logo{
-width:80px;
+width:85px;
 margin-bottom:10px;
+}
+
+h2,h3{
+margin:10px 0;
 }
 
 button{
@@ -47,17 +51,17 @@ font-size:15px;
 }
 
 .primary{
-background:#58d5c2;
+background:#4fd1c5;
 color:white;
 }
 
 .secondary{
-background:#ff7f7f;
+background:#ff7a7a;
 color:white;
 }
 
 .option{
-background:#f2f2f2;
+background:#f3f3f3;
 margin:8px 0;
 padding:12px;
 border-radius:12px;
@@ -82,7 +86,7 @@ display:none;
 }
 
 .slide{
-animation:slide 0.4s;
+animation:slide 0.4s ease;
 }
 
 @keyframes slide{
@@ -99,7 +103,7 @@ margin-bottom:15px;
 
 .bar{
 height:8px;
-background:#58d5c2;
+background:#4fd1c5;
 width:0%;
 border-radius:10px;
 transition:0.4s;
@@ -128,6 +132,12 @@ color:white;
 margin-top:10px;
 }
 
+.quiz-meta{
+font-size:13px;
+color:#777;
+margin-bottom:10px;
+}
+
 </style>
 </head>
 
@@ -135,23 +145,45 @@ margin-top:10px;
 
 <div class="app">
 
-<!-- NAME INPUT -->
+<!-- NAME SCREEN -->
 <div id="nameScreen" class="card">
+
 <img src="https://i.ibb.co/dsBdtCwK/Ttc-logo.png" class="logo">
+
 <h3>Enter Your Name</h3>
-<input id="username" placeholder="Your name" style="padding:10px;width:90%;border-radius:8px;border:1px solid #ccc"><br><br>
+
+<input id="username" placeholder="Your name"
+style="padding:10px;width:90%;border-radius:8px;border:1px solid #ccc">
+
+<br><br>
+
 <button class="primary" onclick="startWelcome()">Continue</button>
+
 </div>
 
-<!-- WELCOME -->
+<!-- WELCOME SCREEN -->
 <div id="welcomeScreen" class="card hidden">
+
 <img src="https://i.ibb.co/dsBdtCwK/Ttc-logo.png" class="logo">
+
 <h2 id="welcomeText"></h2>
-<button class="primary" onclick="startQuiz()">Start Quiz</button>
+
+<div class="quiz-meta">
+English – Tenses Quiz
 </div>
 
-<!-- QUIZ -->
-<div id="quizScreen" class="card hidden">
+<button class="primary" onclick="startQuiz()">Start Quiz</button>
+
+</div>
+
+<!-- QUIZ SCREEN -->
+<div id="quizScreen" class="card hidden slide">
+
+<img src="https://i.ibb.co/dsBdtCwK/Ttc-logo.png" class="logo">
+
+<div class="quiz-meta">
+Subject: English | Chapter: Tenses
+</div>
 
 <div class="progress">
 <div class="bar" id="progressBar"></div>
@@ -164,25 +196,41 @@ margin-top:10px;
 <div id="explanation" class="explanation"></div>
 
 <br>
-<button id="nextBtn" class="primary hidden" onclick="nextQuestion()">Next Question</button>
+
+<button id="nextBtn" class="primary hidden" onclick="nextQuestion()">
+Next Question
+</button>
 
 </div>
 
-<!-- RESULT -->
+<!-- RESULT SCREEN -->
 <div id="resultScreen" class="card hidden">
 
 <img src="https://i.ibb.co/dsBdtCwK/Ttc-logo.png" class="logo">
 
 <div class="result" id="scoreText"></div>
+
 <div id="message"></div>
 
-<button class="share" onclick="shareWhatsApp()">Share on WhatsApp</button>
+<button class="share" onclick="shareWhatsApp()">
+Share on WhatsApp
+</button>
 
-<button class="rating" onclick="rateUs()">Click Me</button>
+<button class="rating" onclick="rateUs()">
+Click Me
+</button>
 
 <br><br>
 
-<button class="primary" onclick="restartQuiz()">Restart Quiz</button>
+<button class="primary" onclick="restartQuiz()">
+Restart Quiz
+</button>
+
+<br><br>
+
+<!-- Elfsight Google Reviews -->
+<script src="https://elfsightcdn.com/platform.js" async></script>
+<div class="elfsight-app-e87fdd6e-f4b8-4807-89b4-ecc80ca4f3c0" data-elfsight-app-lazy></div>
 
 </div>
 
@@ -190,19 +238,16 @@ margin-top:10px;
 
 <script>
 
+/* QUIZ META */
+
+const subjectName="English"
+const chapterName="Tenses"
+
+/* USER */
+
 let username=""
 
-function startWelcome(){
-username=document.getElementById("username").value
-if(!username)return
-
-localStorage.setItem("ttc_name",username)
-
-document.getElementById("nameScreen").classList.add("hidden")
-document.getElementById("welcomeScreen").classList.remove("hidden")
-
-document.getElementById("welcomeText").innerText="Welcome, TTC Champ "+username
-}
+/* QUIZ DATA */
 
 const quizData=[
 {
@@ -228,6 +273,12 @@ question:"We ____ dinner now.",
 options:["eat","eats","are eating","ate"],
 correctIndex:2,
 explanation:"'Now' indicates present continuous tense."
+},
+{
+question:"He ____ a movie tomorrow.",
+options:["watch","watched","will watch","watching"],
+correctIndex:2,
+explanation:"'Tomorrow' indicates future tense."
 }
 ]
 
@@ -235,9 +286,31 @@ let questions=[]
 let index=0
 let score=0
 
+/* UTIL */
+
 function shuffle(arr){
 return arr.sort(()=>Math.random()-0.5)
 }
+
+/* NAME FLOW */
+
+function startWelcome(){
+
+username=document.getElementById("username").value
+
+if(!username)return
+
+localStorage.setItem("ttc_name",username)
+
+document.getElementById("nameScreen").classList.add("hidden")
+document.getElementById("welcomeScreen").classList.remove("hidden")
+
+document.getElementById("welcomeText").innerText=
+"Welcome, TTC Champ "+username
+
+}
+
+/* QUIZ START */
 
 function startQuiz(){
 
@@ -247,7 +320,10 @@ document.getElementById("quizScreen").classList.remove("hidden")
 questions=shuffle([...quizData])
 
 loadQuestion()
+
 }
+
+/* LOAD QUESTION */
 
 function loadQuestion(){
 
@@ -263,6 +339,7 @@ container.innerHTML=""
 opts.forEach(opt=>{
 
 let div=document.createElement("div")
+
 div.className="option"
 div.innerText=opt
 
@@ -275,8 +352,12 @@ container.appendChild(div)
 document.getElementById("explanation").innerText=""
 document.getElementById("nextBtn").classList.add("hidden")
 
-document.getElementById("progressBar").style.width=(index/questions.length*100)+"%"
+document.getElementById("progressBar").style.width=
+(index/questions.length*100)+"%"
+
 }
+
+/* SELECT OPTION */
 
 function selectOption(el,opt,q){
 
@@ -307,11 +388,14 @@ if(o.innerText===correct) o.classList.add("correct")
 
 }
 
-document.getElementById("explanation").innerText="Explanation: "+q.explanation
+document.getElementById("explanation").innerText=
+"Explanation: "+q.explanation
 
 document.getElementById("nextBtn").classList.remove("hidden")
 
 }
+
+/* NEXT QUESTION */
 
 function nextQuestion(){
 
@@ -323,44 +407,69 @@ return
 }
 
 loadQuestion()
+
 }
+
+/* RESULT */
 
 function showResult(){
 
 document.getElementById("quizScreen").classList.add("hidden")
 document.getElementById("resultScreen").classList.remove("hidden")
 
-document.getElementById("scoreText").innerText=score+" / "+questions.length
+document.getElementById("scoreText").innerText=
+score+" / "+questions.length
 
 if(score/questions.length>=0.75){
 
 document.getElementById("message").innerText=
 "Well Done, "+username+"! You're a true TTC Champ!"
 
-confetti({particleCount:200,spread:120})
+confetti({
+particleCount:220,
+spread:120
+})
 
 }else{
 
 document.getElementById("message").innerText=
-"Good try "+username+"! Keep practicing."
+"Good effort "+username+"! Keep practicing."
 
 }
 
 }
+
+/* WHATSAPP SHARE */
 
 function shareWhatsApp(){
 
-let text=`I scored ${score}/${questions.length} in TTC Quiz! Try it too.`
+let message=
 
-let url="https://wa.me/?text="+encodeURIComponent(text)
+`TTC Quiz Result
+
+Student Name: ${username}
+
+Subject: ${subjectName}
+
+Chapter: ${chapterName}
+
+Quiz Score: ${score}/${questions.length}
+
+Try the TTC Quiz!`
+
+let url="https://wa.me/?text="+encodeURIComponent(message)
 
 window.open(url)
 
 }
 
+/* GOOGLE RATING */
+
 function rateUs(){
 window.open("https://g.page/r/YOURGOOGLERATINGLINK")
 }
+
+/* RESTART */
 
 function restartQuiz(){
 location.reload()
