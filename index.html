@@ -3,62 +3,164 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TTC Carousel</title>
+<title>TTC Quiz</title>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <style>
 
 body{
-font-family: Arial, sans-serif;
+margin:0;
+font-family:Arial, Helvetica, sans-serif;
+background:linear-gradient(135deg,#5f2eea,#7b4dff);
 display:flex;
 justify-content:center;
 align-items:center;
 height:100vh;
-background:#f5f5f5;
+color:#333;
 }
 
-.carousel{
-width:200px;
-overflow:hidden;
-position:relative;
+.quiz-container{
+width:360px;
+text-align:center;
 }
 
-.carousel-track{
+.logo{
+width:90px;
+margin-bottom:10px;
+animation:float 3s infinite ease-in-out;
+}
+
+@keyframes float{
+0%{transform:translateY(0)}
+50%{transform:translateY(-8px)}
+100%{transform:translateY(0)}
+}
+
+.top-bar{
 display:flex;
-transition: transform 0.4s ease;
-}
-
-.card{
-min-width:200px;
-height:200px;
-background:white;
-border-radius:10px;
-display:flex;
+justify-content:space-between;
 align-items:center;
-justify-content:center;
-box-shadow:0 4px 12px rgba(0,0,0,0.1);
-font-size:40px;
+color:white;
+margin-bottom:10px;
+}
+
+.timer{
+background:rgba(255,255,255,0.2);
+padding:8px 14px;
+border-radius:20px;
 font-weight:bold;
 }
 
-button{
-position:absolute;
-top:50%;
-transform:translateY(-50%);
-background:#ffffff;
-border:none;
-font-size:20px;
-padding:10px;
+.progress{
+width:100%;
+height:10px;
+background:rgba(255,255,255,0.2);
+border-radius:10px;
+margin-bottom:15px;
+overflow:hidden;
+}
+
+.progress-bar{
+height:10px;
+width:0%;
+background:#4caf50;
+transition:width 0.5s;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:20px;
+box-shadow:0 10px 30px rgba(0,0,0,0.2);
+animation:fadein 0.6s;
+}
+
+@keyframes fadein{
+from{opacity:0;transform:translateY(20px)}
+to{opacity:1;transform:translateY(0)}
+}
+
+.category{
+color:#999;
+font-size:14px;
+}
+
+.question{
+font-size:18px;
+margin:15px 0;
+}
+
+.option{
+background:#f5f5f5;
+padding:12px;
+margin:8px 0;
+border-radius:12px;
 cursor:pointer;
-box-shadow:0 2px 8px rgba(0,0,0,0.2);
-border-radius:50%;
+transition:0.25s;
 }
 
-.prev{
-left:-40px;
+.option:hover{
+transform:scale(1.03);
 }
 
-.next{
-right:-40px;
+.correct{
+background:#c8f7c5;
+animation:pop 0.3s;
+}
+
+.wrong{
+background:#f8c6c6;
+animation:shake 0.3s;
+}
+
+@keyframes pop{
+0%{transform:scale(0.9)}
+100%{transform:scale(1)}
+}
+
+@keyframes shake{
+0%{transform:translateX(0)}
+25%{transform:translateX(-5px)}
+50%{transform:translateX(5px)}
+75%{transform:translateX(-5px)}
+100%{transform:translateX(0)}
+}
+
+.explanation{
+margin-top:10px;
+font-size:14px;
+color:#555;
+min-height:40px;
+}
+
+.next-btn{
+margin-top:15px;
+padding:12px 25px;
+background:#4caf50;
+color:white;
+border:none;
+border-radius:30px;
+font-size:16px;
+cursor:pointer;
+box-shadow:0 6px 15px rgba(0,0,0,0.2);
+transition:0.3s;
+opacity:0.5;
+pointer-events:none;
+}
+
+.next-btn.active{
+opacity:1;
+pointer-events:auto;
+}
+
+.next-btn:hover{
+transform:scale(1.05);
+}
+
+.result{
+color:white;
+font-size:22px;
 }
 
 </style>
@@ -66,46 +168,176 @@ right:-40px;
 
 <body>
 
-<div class="carousel">
+<div class="quiz-container">
 
-<button class="prev">&#10094;</button>
+<img src="https://i.ibb.co/dsBdtCwK/Ttc-logo.png" class="logo">
 
-<div class="carousel-track">
-
-<div class="card">1</div>
-<div class="card">2</div>
-<div class="card">3</div>
-<div class="card">4</div>
-<div class="card">5</div>
-
+<div class="top-bar">
+<div id="qnum">1 / 5</div>
+<div class="timer">⏱ <span id="time">30</span></div>
 </div>
 
-<button class="next">&#10095;</button>
+<div class="progress">
+<div class="progress-bar" id="progress"></div>
+</div>
+
+<div class="card" id="quizCard">
+
+<div class="category">English - Tenses</div>
+
+<div class="question" id="question"></div>
+
+<div id="options"></div>
+
+<div id="explanation" class="explanation"></div>
+
+<button class="next-btn" id="nextBtn" onclick="nextQuestion()">Next</button>
+
+</div>
 
 </div>
 
 <script>
 
-const track = document.querySelector('.carousel-track')
-const next = document.querySelector('.next')
-const prev = document.querySelector('.prev')
-
-let index = 0
-const total = 5
-
-next.addEventListener('click', () => {
-index = (index + 1) % total
-updateCarousel()
-})
-
-prev.addEventListener('click', () => {
-index = (index - 1 + total) % total
-updateCarousel()
-})
-
-function updateCarousel(){
-track.style.transform = `translateX(-${index * 200}px)`
+const quiz=[
+{
+q:"She ____ to school every day.",
+options:["go","goes","going","gone"],
+answer:1,
+explanation:"'She' is third person singular, therefore 'goes' is used."
+},
+{
+q:"I ____ my homework yesterday.",
+options:["did","do","done","doing"],
+answer:0,
+explanation:"'Yesterday' indicates past tense, so 'did' is correct."
+},
+{
+q:"They ____ playing football.",
+options:["is","am","are","be"],
+answer:2,
+explanation:"Plural subject 'they' requires 'are'."
+},
+{
+q:"We ____ dinner now.",
+options:["eat","eats","are eating","ate"],
+answer:2,
+explanation:"'Now' indicates present continuous tense."
+},
+{
+q:"He ____ a movie tomorrow.",
+options:["watch","watched","will watch","watching"],
+answer:2,
+explanation:"'Tomorrow' indicates future tense."
 }
+]
+
+let index=0
+let score=0
+let timer=60
+let interval
+
+function loadQuestion(){
+
+const q=quiz[index]
+
+document.getElementById("question").innerText=q.q
+document.getElementById("qnum").innerText=(index+1)+" / "+quiz.length
+document.getElementById("progress").style.width=(index/quiz.length*100)+"%"
+
+let optionsHTML=""
+
+q.options.forEach((opt,i)=>{
+optionsHTML+=`<div class="option" onclick="selectOption(this,${i})">${opt}</div>`
+})
+
+document.getElementById("options").innerHTML=optionsHTML
+document.getElementById("explanation").innerText=""
+document.getElementById("nextBtn").classList.remove("active")
+
+}
+
+function selectOption(el,i){
+
+const correct=quiz[index].answer
+const options=document.querySelectorAll(".option")
+
+options.forEach(o=>o.onclick=null)
+
+if(i===correct){
+
+el.classList.add("correct")
+score++
+
+confetti({
+particleCount:120,
+spread:90,
+origin:{y:0.6}
+})
+
+}else{
+
+el.classList.add("wrong")
+options[correct].classList.add("correct")
+
+}
+
+document.getElementById("explanation").innerText=
+"Explanation: "+quiz[index].explanation
+
+document.getElementById("nextBtn").classList.add("active")
+
+}
+
+function nextQuestion(){
+
+index++
+
+if(index>=quiz.length){
+finishQuiz()
+return
+}
+
+loadQuestion()
+
+}
+
+function finishQuiz(){
+
+document.getElementById("quizCard").innerHTML=`
+<div class="result">
+🎉 Quiz Completed<br><br>
+Score: ${score} / ${quiz.length}
+</div>
+`
+
+confetti({
+particleCount:200,
+spread:120
+})
+
+clearInterval(interval)
+
+}
+
+function startTimer(){
+
+interval=setInterval(()=>{
+
+timer--
+
+document.getElementById("time").innerText=timer
+
+if(timer<=0){
+finishQuiz()
+}
+
+},1000)
+
+}
+
+loadQuestion()
+startTimer()
 
 </script>
 
